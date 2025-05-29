@@ -1,0 +1,2 @@
+trio_venv/*
+__pycache__

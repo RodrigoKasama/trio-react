@@ -1,0 +1,11 @@
+# Workflow
+Um usuário envia uma mensagem para o servidor criar uma sessão e adiciona o solicitante na sessão
+	- Fica nesse estado até o solicitante iniciar a partida
+Quando a mensagem de inicio de partida for recebida pelo servidor, associa todos os usuários (IP) conectados à partida e gerencia o estado da partida
+
+
+
+Entidades:
+	Serviços envolvendo as rotinas do frontend: API REST
+
+	Serviços referente à coordenação de uma partida e afins: Websocket
