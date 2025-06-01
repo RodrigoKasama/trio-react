@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" height="360" width="235">
-<defs>
-<style type="text/css"> .setline {	stroke: red;	stroke-width: 4;	stroke-linejoin: round;} .setcolor {fill: red;} </style>
-<polygon class="setcolor setline" id="shape" points="30,180 117,145 205,180 117,215"></polygon>
-</defs>
-<rect x="5" y="5" height="350" width="225" rx="10" ry="10" fill="white" stroke="grey" stroke-width="2" /><use y="-50" xlink:href="#shape" /><use y="50" xlink:href="#shape" />
-</svg>

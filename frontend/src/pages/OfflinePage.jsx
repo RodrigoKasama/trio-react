@@ -1,5 +1,4 @@
-import React, { useEffect, useRef } from "react";
-import { Box } from "@mui/material";
+import React from "react";
 import CartaComp from "../components/Carta.jsx";
 
 // Jogo trio offline
@@ -13,23 +12,17 @@ import CartaComp from "../components/Carta.jsx";
 
 // TODO: Adaptar imagem para svg? (Identificar os arquivos com numeros de base 4 com 4 digitos)
 // Ex:
-//      COR      |   FORMA   |  QUANTIDADE  | PREENCHIMENTO  | 
-// 0 => vermelho |  0 => 🔺  |   0 => Um    | 0 => completo  | 
-// 1 => verde    |  1 => ⚫  |   1 => Dois  | 1 => listrado  | 
-// 2 => roxo     |  2 => ⬛  |   2 => Três  | 2 => vazio     | 
-
-// 0000.svg - vermelho 🔺 1 completo
-// 0001.svg - vermelho 🔺 1 listrado
-// 0002.svg - vermelho 🔺 1 vazio
-// 0011.svg - vermelho 🔺 2 listrado
-
+//      COR      |      FORMA     |  QUANTIDADE  | PREENCHIMENTO  | 
+// 0 => vermelho |  0 => Squiggle |   0 => Um    | 0 => completo  | 
+// 1 => verde    |  1 => Pill     |   1 => Dois  | 1 => listrado  | 
+// 2 => roxo     |  2 => Diamond  |   2 => Três  | 2 => vazio     | 
 
 
 // Lógica das cartas (a partir do seu script original)
-const formas = ["🔺", "⚫", "⬛"];
+const formas = ["Squiggle", "Pill", "Diamond"];
 const cores = ["red", "green", "purple"];
 const quantidades = [1, 2, 3];
-const preenchimentos = ["completo", "listrado", "vazado"];
+const preenchimentos = ["full", "striped", "empty"];
 const N_MESA = 12;
 
 
@@ -48,77 +41,21 @@ function gerarBaralho() {
 }
 
 export default function OfflinePage() {
-	
-	// const containerRef = useRef(null);
-	// const baralhoRef = useRef([]);
-	// const mesaRef = useRef([]);
-
-	// useEffect(() => {
-	// 	// let baralho = gerarBaralho().sort(() => Math.random() - 0.5);
-	// 	// let mesa = baralho.splice(0, N_MESA);
-
-	// 	// // Garante que haja trio válido
-	// 	// while (!existeTrioValidoNaMesa(mesa)) {
-	// 	// 	baralho = gerarBaralho().sort(() => Math.random() - 0.5);
-	// 	// 	mesa = baralho.splice(0, N_MESA);
-	// 	// }
-
-	// 	// baralhoRef.current = baralho;
-	// 	// mesaRef.current = mesa;
-	// 	// renderizarMesa(mesa);
-	// }, []);
-
-	// function renderizarMesa(mesa) {
-	// 	const mesaDiv = containerRef.current;
-	// 	mesaDiv.innerHTML = "";
-	// 	mesa.forEach((carta) => {
-	// 		const el = carta.gerarElemento(() => { }); // clique vazio por enquanto
-	// 		mesaDiv.appendChild(el);
-	// 	});
-	// }
-
-	// function existeTrioValidoNaMesa(mesa) {
-	// 	for (let i = 0; i < mesa.length - 2; i++) {
-	// 		for (let j = i + 1; j < mesa.length - 1; j++) {
-	// 			for (let k = j + 1; k < mesa.length; k++) {
-	// 				const trio = [mesa[i], mesa[j], mesa[k]];
-	// 				if (verificarTrio(trio)) return true;
-	// 			}
-	// 		}
-	// 	}
-	// 	return false;
-	// }
-
-	// function verificarTrio(cartas) {
-	// 	const atributos = ["forma", "cor", "quantidade", "preenchimento"];
-	// 	return atributos.every((attr) => {
-	// 		const valores = cartas.map((c) => c[attr]);
-	// 		const set = new Set(valores);
-	// 		return set.size === 1 || set.size === 3;
-	// 	});
-	// }
+	let baralho = gerarBaralho();
+	// Embaralhar o baralho
+	baralho = baralho.sort(() => Math.random() - 0.5);
 
 	return (
 		<div>
 			{
-				// Array.from({ length: N_MESA }).map((_, index) => (
-				// <CartaComp
-				// 	cor="verde"
-				// 	forma="redo"
-				// 	num={3}
-				// 	preenc="cheio"
-				// 	key={index} />
-				// ))
-
-				gerarBaralho().slice(0, N_MESA).map((carta, index) => (
+				baralho.slice(0, N_MESA).map((carta, index) => (
 					<CartaComp
 						cor={carta.cor}
 						forma={carta.forma}
-						num={carta.quantidade}
-						preenc={carta.preenchimento}
+						num={carta.num}
+						preenc={carta.preenc}
 						key={index} />
 				))
-
 			}
 			
 		
