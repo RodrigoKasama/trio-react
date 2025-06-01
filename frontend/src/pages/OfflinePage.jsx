@@ -1,28 +1,19 @@
-import React from "react";
+import React, {useState} from "react";
 import CartaComp from "../components/Carta.jsx";
+import { Grid, Box, Typography } from "@mui/material";
 
-// Jogo trio offline
-// Criando um baralho
-// Embaralhando e Passando ao baralho
-// Dado um baralho, vamos preencher a mesa
-// Tiver 3 cartas selecionadas, vamos verificar se formam um trio
-// Caso forme, vamos substituir as cartas,
-// de acordo com o estado da mesa 
+/* Jogo trio offline
+	- Criando um baralho embaralhado
+	- Dado um baralho, vamos preencher a mesa
+	- Tiver 3 cartas selecionadas, vamos verificar se formam um trio
+	-  Caso forme, vamos substituir as cartas, de acordo com o estado da mesa 
+*/
 
-
-// TODO: Adaptar imagem para svg? (Identificar os arquivos com numeros de base 4 com 4 digitos)
-// Ex:
-//      COR      |      FORMA     |  QUANTIDADE  | PREENCHIMENTO  | 
-// 0 => vermelho |  0 => Squiggle |   0 => Um    | 0 => completo  | 
-// 1 => verde    |  1 => Pill     |   1 => Dois  | 1 => listrado  | 
-// 2 => roxo     |  2 => Diamond  |   2 => Três  | 2 => vazio     | 
-
-
-// Lógica das cartas (a partir do seu script original)
 const formas = ["Squiggle", "Pill", "Diamond"];
-const cores = ["red", "green", "purple"];
+const cores = ["Red", "Green", "Purple"];
 const quantidades = [1, 2, 3];
-const preenchimentos = ["full", "striped", "empty"];
+const preenchimentos = ["Full", "Striped", "Empty"];
+
 const N_MESA = 12;
 
 
@@ -32,7 +23,7 @@ function gerarBaralho() {
 		for (const cor of cores) {
 			for (const quantidade of quantidades) {
 				for (const preenchimento of preenchimentos) {
-					baralho.push({ forma:forma, cor:cor, num:quantidade, preenc:preenchimento});
+					baralho.push({ forma: forma, cor: cor, num: quantidade, preenc: preenchimento });
 				}
 			}
 		}
@@ -41,50 +32,32 @@ function gerarBaralho() {
 }
 
 export default function OfflinePage() {
-	let baralho = gerarBaralho();
-	// Embaralhar o baralho
-	baralho = baralho.sort(() => Math.random() - 0.5);
+	// Shuffle the deck
+
+	const [baralho] = useState(gerarBaralho().sort(() => Math.random() - 0.5));
+	const mesa = baralho.slice(0, N_MESA);
+
 
 	return (
-		<div>
-			{
-				baralho.slice(0, N_MESA).map((carta, index) => (
-					<CartaComp
-						cor={carta.cor}
-						forma={carta.forma}
-						num={carta.num}
-						preenc={carta.preenc}
-						key={index} />
-				))
-			}
-			
-		
 
-		</div>
-		
-		// <Box
-		// 	sx={{
-		// 		height: "100vh",
-		// 		display: "flex",
-		// 		justifyContent: "center",
-		// 		alignItems: "center",
-		// 		bgcolor: "#f3e5f5",
-		// 		p: 2,
-		// 	}}
-		// >
-		// 	<Box
-		// 		ref={containerRef}
-		// 		id="mesa"
-		// 		sx={{
-		// 			width: "100%",
-		// 			maxWidth: 1000,
-		// 			display: "grid",
-		// 			gap: 2,
-		// 			gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
-		// 			justifyItems: "center",
-		// 			alignContent: "center",
-		// 		}}
-		// 	/>
-		// </Box>
+		<Box sx={{ padding: 4 }}>
+			<Typography variant="h4" gutterBottom>
+				Mesa de Cartas
+			</Typography>
+
+			<Grid container spacing={2}>
+				{mesa.map((carta, index) => (
+					<Grid item xs={12} sm={10} md={3} key={index}>
+						<CartaComp
+							cor={carta.cor}
+							forma={carta.forma}
+							num={carta.num}
+							preenc={carta.preenc}
+						/>
+					</Grid>
+				))}
+			</Grid>
+		</Box>
+
 	);
 }
