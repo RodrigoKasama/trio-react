@@ -1,13 +1,14 @@
-import React, {useState} from "react";
-import CartaComp from "../components/Carta.jsx";
-import { Grid, Box, Typography } from "@mui/material";
-
 /* Jogo trio offline
 	- Criando um baralho embaralhado
 	- Dado um baralho, vamos preencher a mesa
 	- Tiver 3 cartas selecionadas, vamos verificar se formam um trio
 	-  Caso forme, vamos substituir as cartas, de acordo com o estado da mesa 
 */
+
+
+import React, { useState } from "react";
+import Carta from "../components/Carta.jsx";
+import { Grid, Box, Typography } from "@mui/material";
 
 const formas = ["Squiggle", "Pill", "Diamond"];
 const cores = ["Red", "Green", "Purple"];
@@ -31,12 +32,46 @@ function gerarBaralho() {
 	return baralho;
 }
 
+
 export default function OfflinePage() {
-	// Shuffle the deck
 
-	const [baralho] = useState(gerarBaralho().sort(() => Math.random() - 0.5));
-	const mesa = baralho.slice(0, N_MESA);
+	const [baralho, setBaralho] = useState(gerarBaralho().sort(() => Math.random() - 0.5));
+	const [cartasMesa, setCartasMesa] = useState(baralho.slice(0, N_MESA));
+	const [selecionadas, setSelecionadas] = useState([]);
 
+
+	function handleSelecionarCarta(index) {
+
+		let novaSelecao;
+		const jaSelecionada = selecionadas.includes(index);
+
+		if (!jaSelecionada) {
+			novaSelecao = selecionadas.length != 3 ? [...selecionadas, index] : [...selecionadas];
+		} else {
+			novaSelecao = selecionadas.filter(i => i !== index);
+		}
+
+		setSelecionadas(novaSelecao);
+
+		if (novaSelecao.length === 3) {
+			const cartasSelecionadas = novaSelecao.map(i => cartasMesa[i]);
+			let is_trio = check_trio(cartasSelecionadas);
+
+			let msg = "Trio " + (is_trio ? "formado!" : "não formado!");
+			console.log(msg);
+		}
+	}
+
+
+	function check_trio(cartas) {
+		for (let att of Object.keys(cartas[0])) {
+			let aux = new Set(cartas.map(carta => carta[att]));
+			if (aux.size !== 1 && aux.size !== 3) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	return (
 
@@ -46,14 +81,10 @@ export default function OfflinePage() {
 			</Typography>
 
 			<Grid container spacing={2}>
-				{mesa.map((carta, index) => (
-					<Grid item xs={12} sm={10} md={3} key={index}>
-						<CartaComp
-							cor={carta.cor}
-							forma={carta.forma}
-							num={carta.num}
-							preenc={carta.preenc}
-						/>
+				{cartasMesa.map((carta, index) => (
+					<Grid key={index} sx={{ border: selecionadas.includes(index) ? '2px solid red' : 'none'}}
+						onClick={() => handleSelecionarCarta(index) }>
+						<Carta cor={carta.cor} forma={carta.forma} num={carta.num} preenc={carta.preenc} />
 					</Grid>
 				))}
 			</Grid>

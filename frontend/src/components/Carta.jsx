@@ -15,25 +15,24 @@ const corMap = { "Red": '0', "Green": '1', "Purple": '2' };
 const numMap = { 1: '0', 2: '1', 3: '2' };
 const preencMap = { "Full": '0', "Striped": '1', "Empty": '2' };
 
-const Carta = ({ cor, forma, num, preenc }) => {
-	
+const Carta = ({ cor, forma, num, preenc}) => {
+
 	const arquivo = corMap[cor] + formaMap[forma] + preencMap[preenc] + numMap[num] + ".svg";
 
 	const cartaStyle = {
-		// aspectRatio: '3/4',
+		aspectRatio: '3/4',
 		display: 'flex',
-		// justifyContent: 'center',
-		// alignItems: 'center',
-		// border: '2px solid black',
-		// borderRadius: '8px',
-		// padding: '10px',
-		// boxSizing: 'border-box',
+		justifyContent: 'center',
+		alignItems: 'center',
 		width: '150px',
 	};
 
 
 	return (
-		<img src={`/public/${arquivo}`} alt="carta" style={cartaStyle} />
+		<img
+			src={`/${arquivo}`}
+			alt="carta"
+			style={cartaStyle} />
 	);
 };
 
