@@ -45,21 +45,23 @@ export default function OfflinePage() {
 
 	const [baralho, setBaralho] = useState(gerarBaralho().sort(() => Math.random() - 0.5));
 	const [cartasMesa, setCartasMesa] = useState(baralho.slice(0, N_MESA));
-	const [nTrio, setNTrio] = useState(0);
+	const [nTrio, setNTrio] = useState();
 	const [selecionadas, setSelecionadas] = useState([]);
 
 
 	useState(() => { 
 		// Verificar se há trios na mesa
 		let n_trios = check_mesa(true);
-		while ( n_trios == 0 ) {
+		while (n_trios == 0) {
+			console.log("Não há trios válidos na mesa, reembaralhando...");
 			n_trios = check_mesa(true);
 			setBaralho(gerarBaralho().sort(() => Math.random() - 0.5));
 			setCartasMesa(baralho.slice(0, N_MESA));
 		}
 		setNTrio(n_trios);
+		console.log("Número de trios válidos na mesa: ", n_trios);
 
-	}, []);
+	}, [cartasMesa]);
 
 
 	function check_mesa(return_qtd = false) {
@@ -73,10 +75,12 @@ export default function OfflinePage() {
 		for (let i = 0; i < cartasMesa.length; i++) {
 			for (let j = i + 1; j < cartasMesa.length; j++) {
 				for (let k = j + 1; k < cartasMesa.length; k++) {
+
 					let trio = [cartasMesa[i], cartasMesa[j], cartasMesa[k]];
 					if (check_trio(trio)) {
+						console.log("Trio válido encontrado: ", trio);
 						n_trios_validos++;
-						if (!return_qtd) {
+						if (return_qtd === false) {
 							return true;
 						}
 					}
@@ -114,9 +118,11 @@ export default function OfflinePage() {
 
 
 	function check_trio(cartas) {
+		// console.log("Verificando trio: ", cartas);
 		for (let att of Object.keys(cartas[0])) {
 			if (att === 'filename') continue; // Ignorar o atributo filename
 			let aux = new Set(cartas.map(carta => carta[att]));
+			// console.log(`Atributo: ${att}, Valores: ${Array.from(aux)}`);
 			if (aux.size !== 1 && aux.size !== 3) {
 				return false;
 			}
