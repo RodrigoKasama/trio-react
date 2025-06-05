@@ -4,5 +4,5 @@
 <style type="text/css"> .setline {	stroke: red;	stroke-width: 4;	stroke-linejoin: round;} </style>
 <rect class="setcolor setline" id="shape" x="30" y="145" width="175" height="70" rx="35"></rect>
 </defs>
-<rect x="5" y="5" height="350" width="225" rx="10" ry="10" fill="white" stroke="grey" stroke-width="2" /><use y="-100" xlink:href="#shape" fill="url(#verticalStripes)"/><use xlink:href="#shape" fill="url(#verticalStripes)"/><use y="100" xlink:href="#shape" fill="url(#verticalStripes)"/>
+<use y="-100" xlink:href="#shape" fill="url(#verticalStripes)"/><use xlink:href="#shape" fill="url(#verticalStripes)"/><use y="100" xlink:href="#shape" fill="url(#verticalStripes)"/>
 </svg>

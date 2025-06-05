@@ -47,7 +47,7 @@ def gen_svg(cor, shape, num, preenc):
 	output += '</defs>\n'
 	
 	# Background
-	output += '<rect x="5" y="5" height="350" width="225" rx="10" ry="10" fill="white" stroke="grey" stroke-width="2" />'
+	# output += '<rect x="5" y="5" height="350" width="225" rx="10" ry="10" fill="white" stroke="grey" stroke-width="2" />'
 	
 	# Desenho
 	prefix = '' if preenc == "full" else 'fill="url(#verticalStripes)"'
@@ -77,6 +77,5 @@ for cor in dicio_color.keys():
 				with open(f"./svgs/{filename}", "w") as file:
 					file.write(svg_content)
 
-print(f"Generated {i} SVG files.")
 
 
