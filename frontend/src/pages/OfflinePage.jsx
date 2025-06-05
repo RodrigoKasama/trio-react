@@ -39,12 +39,56 @@ function gerarBaralho() {
 }
 
 
+
+
 export default function OfflinePage() {
 
 	const [baralho, setBaralho] = useState(gerarBaralho().sort(() => Math.random() - 0.5));
 	const [cartasMesa, setCartasMesa] = useState(baralho.slice(0, N_MESA));
+	const [nTrio, setNTrio] = useState(0);
 	const [selecionadas, setSelecionadas] = useState([]);
 
+
+	useState(() => { 
+		// Verificar se há trios na mesa
+		let n_trios = check_mesa(true);
+		while ( n_trios == 0 ) {
+			n_trios = check_mesa(true);
+			setBaralho(gerarBaralho().sort(() => Math.random() - 0.5));
+			setCartasMesa(baralho.slice(0, N_MESA));
+		}
+		setNTrio(n_trios);
+
+	}, []);
+
+
+	function check_mesa(return_qtd = false) {
+		// Percorrer as cartas na mesa e verificar se há trios
+		if( cartasMesa.length < 3) {
+			console.log("Não há cartas suficientes na mesa para formar um trio.");
+			return false;
+		}
+
+		let n_trios_validos = 0;
+		for (let i = 0; i < cartasMesa.length; i++) {
+			for (let j = i + 1; j < cartasMesa.length; j++) {
+				for (let k = j + 1; k < cartasMesa.length; k++) {
+					let trio = [cartasMesa[i], cartasMesa[j], cartasMesa[k]];
+					if (check_trio(trio)) {
+						n_trios_validos++;
+						if (!return_qtd) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		if (return_qtd) {
+			return n_trios_validos;
+		} else {
+			return false;
+		}
+	}
 
 	function handleSelecionarCarta(index) {
 
