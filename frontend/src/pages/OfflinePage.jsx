@@ -7,24 +7,30 @@
 
 
 import React, { useState } from "react";
-import Carta from "../components/Carta.jsx";
+// import Carta from "../components/Carta.jsx";
 import { Grid, Box, Typography } from "@mui/material";
-
-const formas = ["Squiggle", "Pill", "Diamond"];
-const cores = ["Red", "Green", "Purple"];
-const quantidades = [1, 2, 3];
-const preenchimentos = ["Full", "Striped", "Empty"];
 
 const N_MESA = 12;
 
+const formaMap = { "Squiggle": '0', "Pill": '1', "Diamond": '2' };
+const corMap = { "Red": '0', "Green": '1', "Purple": '2' };
+const numMap = { 1: '0', 2: '1', 3: '2' };
+const preencMap = { "Full": '0', "Striped": '1', "Empty": '2' };
 
 function gerarBaralho() {
 	const baralho = [];
-	for (const forma of formas) {
-		for (const cor of cores) {
-			for (const quantidade of quantidades) {
-				for (const preenchimento of preenchimentos) {
-					baralho.push({ forma: forma, cor: cor, num: quantidade, preenc: preenchimento });
+	for (const forma of Object.keys(formaMap)) {
+		for (const cor of Object.keys(corMap)) {
+			for (const quantidade of Object.keys(numMap)) {
+				for (const preenchimento of Object.keys(preencMap)) {
+					baralho.push({
+						cor: cor,
+						forma: forma,
+						preenc: preenchimento,
+						num: quantidade,
+						// Codigo do arquivo SVG
+						filename: corMap[cor] + formaMap[forma] + preencMap[preenchimento] + numMap[quantidade]
+					});
 				}
 			}
 		}
@@ -45,10 +51,10 @@ export default function OfflinePage() {
 		let novaSelecao;
 		const jaSelecionada = selecionadas.includes(index);
 
-		if (!jaSelecionada) {
-			novaSelecao = selecionadas.length != 3 ? [...selecionadas, index] : [...selecionadas];
-		} else {
+		if (jaSelecionada) {
 			novaSelecao = selecionadas.filter(i => i !== index);
+		} else {
+			novaSelecao = selecionadas.length != 3 ? [...selecionadas, index] : [...selecionadas];
 		}
 
 		setSelecionadas(novaSelecao);
@@ -65,6 +71,7 @@ export default function OfflinePage() {
 
 	function check_trio(cartas) {
 		for (let att of Object.keys(cartas[0])) {
+			if (att === 'filename') continue; // Ignorar o atributo filename
 			let aux = new Set(cartas.map(carta => carta[att]));
 			if (aux.size !== 1 && aux.size !== 3) {
 				return false;
@@ -73,18 +80,33 @@ export default function OfflinePage() {
 		return true;
 	}
 
+	
+
+
 	return (
 
-		<Box sx={{ padding: 4 }}>
-			<Typography variant="h4" gutterBottom>
-				Mesa de Cartas
-			</Typography>
+		<Box sx={{padding: 4}}>
 
-			<Grid container spacing={2}>
+			<Grid container spacing={1} justifyContent={"space-evenly"}>
 				{cartasMesa.map((carta, index) => (
-					<Grid key={index} sx={{ border: selecionadas.includes(index) ? '2px solid red' : 'none'}}
-						onClick={() => handleSelecionarCarta(index) }>
-						<Carta cor={carta.cor} forma={carta.forma} num={carta.num} preenc={carta.preenc} />
+
+
+					<Grid key={index} onClick={() => handleSelecionarCarta(index)}>
+						{/* <Carta cor={carta.cor} forma={carta.forma} num={carta.num} preenc={carta.preenc} selected={selecionadas.includes(index) ? true : false}/> */}
+						{/* <Carta cor={carta.cor} forma={carta.forma} num={carta.num} preenc={carta.preenc} selected={1}/> */}
+
+						<Box sx={{
+							// width: '195px',
+							height: '350px',
+							border: selecionadas.includes(index) ? '3px solid red' : '3px solid gray',
+							borderRadius: '15px',
+							display: 'flex',
+							justifyContent: 'center',
+							alignItems: 'center',
+							// aspectRatio: '3/4',
+						}}>
+							<img src={carta.filename + `.svg`} alt={`${carta.num} ${carta.forma} ${carta.preenc} ${carta.cor}`} />
+						</Box>
 					</Grid>
 				))}
 			</Grid>
