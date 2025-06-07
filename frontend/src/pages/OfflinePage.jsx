@@ -37,26 +37,31 @@ function gerarBaralho() {
 	}
 	return baralho;
 }
-// const [baralho, setBaralho] = useState(gerarBaralho().sort(() => Math.random() - 0.5));
 
 export default function OfflinePage() {
 
 	const [nCartas, setNCartas] = useState(12);
-	const [baralho, setBaralho] = useState(gerarBaralho());
+	// const [baralho, setBaralho] = useState(gerarBaralho());
+	const [baralho, setBaralho] = useState(gerarBaralho().sort(() => Math.random() - 0.5));
 	const [cartasMesa, setCartasMesa] = useState([]);
 	const [selecionadas, setSelecionadas] = useState([]);
 	const [nTrio, setNTrio] = useState(0);
 
 	const jaPreencheu = useRef(false);
 
+	// A cada alteração do valor de baralho exibir o estado do baralho
+	// useEffect(() => {
+	// 	console.log("Trios na mesa: ", nTrio);
+	// }, [nTrio]);
+
 	// Primeira renderização, preencher a mesa com as primeiras cartas do baralho
 	useEffect(() => {
 		if (!jaPreencheu.current) {
-			let cartasIniciais = baralho.slice(0, nCartas);
-			let novoBaralho = baralho.slice(nCartas);
+		let cartasIniciais = baralho.slice(0, nCartas);
+		let novoBaralho = baralho.slice(nCartas);
 
-			setBaralho(novoBaralho);
-			setCartasMesa(cartasIniciais);
+		setBaralho(novoBaralho);
+		setCartasMesa(cartasIniciais);
 			jaPreencheu.current = true;
 		}
 
@@ -67,7 +72,12 @@ export default function OfflinePage() {
 		if (cartasMesa.length > 0) {
 			// Verificar se há trios na mesa
 			let n_trios = check_mesa(cartasMesa);
+			setNTrio(n_trios);
 
+			if (baralho.length === 0 && n_trios === null) {
+				console.log("Baralho vazio e não há trios válidos na mesa. Fim de jogo.");
+				return;
+			}
 			if (n_trios === 0) {
 
 				let newBaralho, cartasIniciais, novoBaralho;
@@ -80,12 +90,15 @@ export default function OfflinePage() {
 				}
 				while (n_trios == 0);
 
-				console.log("Número de trios válidos na mesa: ", n_trios);
 
 				setNTrio(n_trios);
 				setBaralho(novoBaralho);
 				setCartasMesa(cartasIniciais);
 			}
+			console.log("Número de trios válidos na mesa: ", n_trios);
+		}
+		if (baralho.length === 0 && cartasMesa.length === 0) {
+			console.log("Baralho vazio e mesa vazia. Fim de jogo.");
 		}
 	}, [cartasMesa])
 
@@ -107,6 +120,7 @@ export default function OfflinePage() {
 				for (let k = j + 1; k < mesa.length; k++) {
 					let trio = [mesa[i], mesa[j], mesa[k]];
 					if (check_trio(trio)) {
+						// console.log("Trio válido encontrado: ", trio);
 						n_trios_validos++;
 					}
 				}
@@ -126,10 +140,6 @@ export default function OfflinePage() {
 		return true;
 	}
 
-	// A cada alteração do valor de baralho exibir o estado do baralho
-	// useEffect(() => {
-	// 	console.log("Baralho atualizado: ", baralho);
-	// }, [baralho]);
 
 	function handleSelecionarCarta(index) {
 
@@ -141,6 +151,7 @@ export default function OfflinePage() {
 		} else {
 			novaSelecao = selecionadas.length != 3 ? [...selecionadas, index] : [...selecionadas];
 		}
+		novaSelecao = novaSelecao.sort();
 
 		setSelecionadas(novaSelecao);
 
@@ -158,27 +169,46 @@ export default function OfflinePage() {
 				for (const index of novaSelecao) {
 					newMesa[index] = newCards.shift();
 				}
+				newMesa = newMesa.filter(carta => carta !== undefined);
 
 				let n_trios = check_mesa(newMesa);
 
 				if (n_trios == 0) {
-					console.log("Com a substituição do trio, não há mais trios válidos na mesa.");
+					console.log("Com a substituição do trio, não há mais trios válidos na mesa. Fim do Jogo.");
 					// 	setNCartas(nCartas + 1);
 					// 	setCartasMesa(baralho.slice(0, nCartas));
 				}
 				else {
 					setCartasMesa(newMesa);
 					setBaralho(newBaralho);
-					setSelecionadas([]);
 				}
-
 			}
+			setSelecionadas([]);
 		}
 	}
 
 	return (
 
 		<Box sx={{ padding: 4 }}>
+
+			<Box 
+				sx={{
+					marginBottom: 2,
+					padding: 2,
+					border: '2px solid #1976d2',
+					borderRadius: '8px',
+					backgroundColor: '#e3f2fd',
+					textAlign: 'center',
+					boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+				}}
+			>
+				<Typography 
+					variant="h6" 
+					sx={{ color: '#1976d2', fontWeight: 'bold' }}
+				>
+					Trio(s) Existente(s): {nTrio}
+				</Typography>
+			</Box>
 
 			<Grid container spacing={1} justifyContent={"space-evenly"}>
 				{cartasMesa.map((carta, index) => (
