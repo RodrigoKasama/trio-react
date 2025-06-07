@@ -6,11 +6,11 @@
 */
 
 
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 // import Carta from "../components/Carta.jsx";
 import { Grid, Box, Typography } from "@mui/material";
 
-const N_MESA = 12;
+
 
 const formaMap = { "Squiggle": '0', "Pill": '1', "Diamond": '2' };
 const corMap = { "Red": '0', "Green": '1', "Purple": '2' };
@@ -37,66 +37,103 @@ function gerarBaralho() {
 	}
 	return baralho;
 }
-
-
-
+// const [baralho, setBaralho] = useState(gerarBaralho().sort(() => Math.random() - 0.5));
 
 export default function OfflinePage() {
 
-	const [baralho, setBaralho] = useState(gerarBaralho().sort(() => Math.random() - 0.5));
-	const [cartasMesa, setCartasMesa] = useState(baralho.slice(0, N_MESA));
-	const [nTrio, setNTrio] = useState();
+	const [nCartas, setNCartas] = useState(12);
+	const [baralho, setBaralho] = useState(gerarBaralho());
+	const [cartasMesa, setCartasMesa] = useState([]);
 	const [selecionadas, setSelecionadas] = useState([]);
+	const [nTrio, setNTrio] = useState(0);
 
+	const jaPreencheu = useRef(false);
 
-	useState(() => { 
-		// Verificar se há trios na mesa
-		let n_trios = check_mesa(true);
-		while (n_trios == 0) {
-			console.log("Não há trios válidos na mesa, reembaralhando...");
-			n_trios = check_mesa(true);
-			setBaralho(gerarBaralho().sort(() => Math.random() - 0.5));
-			setCartasMesa(baralho.slice(0, N_MESA));
+	// Primeira renderização, preencher a mesa com as primeiras cartas do baralho
+	useEffect(() => {
+		if (!jaPreencheu.current) {
+			let cartasIniciais = baralho.slice(0, nCartas);
+			let novoBaralho = baralho.slice(nCartas);
+
+			setBaralho(novoBaralho);
+			setCartasMesa(cartasIniciais);
+			jaPreencheu.current = true;
 		}
-		setNTrio(n_trios);
-		console.log("Número de trios válidos na mesa: ", n_trios);
 
-	}, [cartasMesa]);
+	}, []);
 
+	// Rotina baseada em cartasMesa, verificar se há trios válidos. Caso não tenha vou redefinir o baralho e preencher a mesa novamente
+	useEffect(() => {
+		if (cartasMesa.length > 0) {
+			// Verificar se há trios na mesa
+			let n_trios = check_mesa(cartasMesa);
 
-	function check_mesa(return_qtd = false) {
+			if (n_trios === 0) {
+
+				let newBaralho, cartasIniciais, novoBaralho;
+				do {
+					console.log("Não há trios válidos na mesa, reembaralhando...");
+					newBaralho = gerarBaralho().sort(() => Math.random() - 0.5);
+					cartasIniciais = newBaralho.slice(0, nCartas);
+					novoBaralho = newBaralho.slice(nCartas);
+					n_trios = check_mesa(cartasIniciais);
+				}
+				while (n_trios == 0);
+
+				console.log("Número de trios válidos na mesa: ", n_trios);
+
+				setNTrio(n_trios);
+				setBaralho(novoBaralho);
+				setCartasMesa(cartasIniciais);
+			}
+		}
+	}, [cartasMesa])
+
+	/**
+	 * 
+	 * @param {*} mesa 
+	 * @param {*} return_qtd 
+	 * @returns Number of valid trios in game or null if there are not enough cards
+	 */
+	function check_mesa(mesa) {
 		// Percorrer as cartas na mesa e verificar se há trios
-		if( cartasMesa.length < 3) {
-			console.log("Não há cartas suficientes na mesa para formar um trio.");
-			return false;
+		if (mesa.length < 3) {
+			return null;
 		}
 
 		let n_trios_validos = 0;
-		for (let i = 0; i < cartasMesa.length; i++) {
-			for (let j = i + 1; j < cartasMesa.length; j++) {
-				for (let k = j + 1; k < cartasMesa.length; k++) {
-
-					let trio = [cartasMesa[i], cartasMesa[j], cartasMesa[k]];
+		for (let i = 0; i < mesa.length; i++) {
+			for (let j = i + 1; j < mesa.length; j++) {
+				for (let k = j + 1; k < mesa.length; k++) {
+					let trio = [mesa[i], mesa[j], mesa[k]];
 					if (check_trio(trio)) {
-						console.log("Trio válido encontrado: ", trio);
 						n_trios_validos++;
-						if (return_qtd === false) {
-							return true;
-						}
 					}
 				}
 			}
 		}
-		if (return_qtd) {
-			return n_trios_validos;
-		} else {
-			return false;
-		}
+		return n_trios_validos;
 	}
+
+	function check_trio(cartas) {
+		for (let att of Object.keys(cartas[0])) {
+			if (att === 'filename') continue;
+			let aux = new Set(cartas.map(carta => carta[att]));
+			if (aux.size !== 1 && aux.size !== 3) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	// A cada alteração do valor de baralho exibir o estado do baralho
+	// useEffect(() => {
+	// 	console.log("Baralho atualizado: ", baralho);
+	// }, [baralho]);
 
 	function handleSelecionarCarta(index) {
 
-		let novaSelecao;
+		let novaSelecao = [];
 		const jaSelecionada = selecionadas.includes(index);
 
 		if (jaSelecionada) {
@@ -111,31 +148,37 @@ export default function OfflinePage() {
 			const cartasSelecionadas = novaSelecao.map(i => cartasMesa[i]);
 			let is_trio = check_trio(cartasSelecionadas);
 
-			let msg = "Trio " + (is_trio ? "formado!" : "não formado!");
-			console.log(msg);
-		}
-	}
+			if (is_trio) {
 
+				let newMesa = [...cartasMesa];
+				let newCards = baralho.slice(0, novaSelecao.length)
+				let newBaralho = baralho.slice(novaSelecao.length);
 
-	function check_trio(cartas) {
-		// console.log("Verificando trio: ", cartas);
-		for (let att of Object.keys(cartas[0])) {
-			if (att === 'filename') continue; // Ignorar o atributo filename
-			let aux = new Set(cartas.map(carta => carta[att]));
-			// console.log(`Atributo: ${att}, Valores: ${Array.from(aux)}`);
-			if (aux.size !== 1 && aux.size !== 3) {
-				return false;
+				// Substitui a carta selecionada da mesa e por uma nova do baralho
+				for (const index of novaSelecao) {
+					newMesa[index] = newCards.shift();
+				}
+
+				let n_trios = check_mesa(newMesa);
+
+				if (n_trios == 0) {
+					console.log("Com a substituição do trio, não há mais trios válidos na mesa.");
+					// 	setNCartas(nCartas + 1);
+					// 	setCartasMesa(baralho.slice(0, nCartas));
+				}
+				else {
+					setCartasMesa(newMesa);
+					setBaralho(newBaralho);
+					setSelecionadas([]);
+				}
+
 			}
 		}
-		return true;
 	}
-
-	
-
 
 	return (
 
-		<Box sx={{padding: 4}}>
+		<Box sx={{ padding: 4 }}>
 
 			<Grid container spacing={1} justifyContent={"space-evenly"}>
 				{cartasMesa.map((carta, index) => (
@@ -146,8 +189,8 @@ export default function OfflinePage() {
 						{/* <Carta cor={carta.cor} forma={carta.forma} num={carta.num} preenc={carta.preenc} selected={1}/> */}
 
 						<Box sx={{
-							// width: '195px',
-							height: '350px',
+							width: '210px',
+							height: '320px',
 							border: selecionadas.includes(index) ? '3px solid red' : '3px solid gray',
 							borderRadius: '15px',
 							display: 'flex',
