@@ -7,10 +7,7 @@
 
 
 import React, { useEffect, useState, useRef } from "react";
-// import Carta from "../components/Carta.jsx";
 import { Grid, Box, Typography } from "@mui/material";
-
-
 
 const formaMap = { "Squiggle": '0', "Pill": '1', "Diamond": '2' };
 const corMap = { "Red": '0', "Green": '1', "Purple": '2' };
@@ -41,18 +38,15 @@ function gerarBaralho() {
 export default function OfflinePage() {
 
 	const [nCartas, setNCartas] = useState(12);
-	// const [baralho, setBaralho] = useState(gerarBaralho());
-	const [baralho, setBaralho] = useState(gerarBaralho().sort(() => Math.random() - 0.5));
+	// const [baralho, setBaralho] = useState(gerarBaralho().sort(() => Math.random() - 0.5));
+	const [baralho, setBaralho] = useState(gerarBaralho());
+	// Conjunto de cartas da mesa, baseia-se em nCartas do baralho
 	const [cartasMesa, setCartasMesa] = useState([]);
+	// Conjunto de cartas selecionadas para formar um trio
 	const [selecionadas, setSelecionadas] = useState([]);
 	const [nTrio, setNTrio] = useState(0);
-
 	const jaPreencheu = useRef(false);
 
-	// A cada alteração do valor de baralho exibir o estado do baralho
-	// useEffect(() => {
-	// 	console.log("Trios na mesa: ", nTrio);
-	// }, [nTrio]);
 
 	// Primeira renderização, preencher a mesa com as primeiras cartas do baralho
 	useEffect(() => {
@@ -182,8 +176,8 @@ export default function OfflinePage() {
 					setCartasMesa(newMesa);
 					setBaralho(newBaralho);
 				}
+				setSelecionadas([]);
 			}
-			setSelecionadas([]);
 		}
 	}
 

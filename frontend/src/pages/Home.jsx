@@ -1,4 +1,3 @@
-// src/pages/HomePage.jsx
 import React from 'react';
 import { Box, Button, Container, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -19,8 +18,8 @@ export default function HomePage() {
 			<Container maxWidth="sm">
 				<Box sx={{
 					textAlign: 'center',
-					p: 4,
 					bgcolor: 'white',
+					p: 4,
 					borderRadius: 4,
 					boxShadow: 3,
 				}}
