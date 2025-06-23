@@ -1,9 +1,54 @@
-import React from 'react';
-import { Box, Button, Container, Stack, Typography } from '@mui/material';
+import React, { useState } from 'react';
+// import { Box, Button, Container, Stack, Typography } from '@mui/material';
+import { Box, Button, Container, Stack, Typography, Avatar, Tooltip, Popover, TextField } from '@mui/material';
+
 import { useNavigate } from 'react-router-dom';
+import { getAvailableParties, login, token_name } from '../services/backend_utils';
+
+
 
 export default function HomePage() {
 	const navigate = useNavigate();
+
+	// Fetch available parties when the component mounts
+	// console.log(getAvailableParties());
+
+	const [logged, setLogged] = useState(Boolean(localStorage.getItem(token_name)) || false);
+
+	const [anchorEl, setAnchorEl] = useState(false);
+
+	// Form state
+	const [username, setUsername] = useState('');
+	const [password, setPassword] = useState('');
+
+	const handleAvatarClick = (event) => {
+		setAnchorEl(event.currentTarget);
+	};
+
+	const handleClose = () => {
+		setAnchorEl(null);
+	};
+
+	const open = Boolean(anchorEl);
+
+	const handleLogin = () => {
+		// Exemplo de login fake
+		if (username && password) {
+			// Chamar o serviço de autenticação pela API, se tudo certo, armazenar o token no localStorage
+			let token = login({ username, password });
+			localStorage.setItem(token_name, token);
+			setLogged(true);
+			handleClose();
+		}
+	};
+
+	const handleLogout = () => {
+		localStorage.removeItem(token_name);
+		handleClose();
+		setLogged(false);
+	};
+
+
 
 	return (
 		<Box
@@ -13,8 +58,55 @@ export default function HomePage() {
 				alignItems: 'center',
 				justifyContent: 'center',
 				background: 'linear-gradient(to bottom right, #bbdefb, #d1c4e9)',
+				position: 'relative',
 			}}
 		>
+
+
+			<Box sx={{position: 'absolute', top: 16, right: 16,}}>
+				<Avatar
+					sx={{ bgcolor: logged ? "green" : "red", width: 60, height: 60, cursor: 'pointer' }}
+					onClick={handleAvatarClick}
+				/>
+
+				<Popover
+					open={open}
+					anchorEl={anchorEl}
+					onClose={handleClose}
+					anchorOrigin={{vertical: 'bottom', horizontal: 'right',}}
+				>
+					<Box sx={{ p: 2, width: 150 }}>
+						{logged ? (
+							<Button variant="contained" color="error" fullWidth onClick={handleLogout}>
+								Logout
+							</Button>
+						) : (
+							<Stack spacing={1}>
+								<TextField
+									label="Usuário"
+									size="small"
+									fullWidth
+									value={username}
+									onChange={(e) => setUsername(e.target.value)}
+								/>
+								<TextField
+									label="Senha"
+									type="password"
+									size="small"
+									fullWidth
+									value={password}
+									onChange={(e) => setPassword(e.target.value)}
+								/>
+								<Button variant="contained" onClick={handleLogin}>
+									Entrar
+								</Button>
+							</Stack>
+						)}
+					</Box>
+				</Popover>
+			</Box>
+
+
 			<Container maxWidth="sm">
 				<Box sx={{
 					textAlign: 'center',
@@ -28,14 +120,28 @@ export default function HomePage() {
 						TRIO
 					</Typography>
 					<Stack spacing={2} alignItems="center">
-						<Button
-							variant="contained"
-							color="primary"
-							size="large"
-							onClick={() => navigate('/online')}
+
+						<Tooltip title="Para acessar o modo online, é preciso estar logado em uma conta."
+
 						>
-							Jogar Online
-						</Button>
+							<Button
+								disabled={!logged}
+								// disabled={!isLoggedIn}
+								// onMouseEnter={() => {
+								// 	if (isLoggedIn) {
+								// 		alert('Para acessar o modo online, é preciso estar logado em uma conta.');
+								// 	}
+								// }}
+
+								variant="contained"
+								color="primary"
+								size="large"
+								onClick={() => navigate('/online')}
+							>
+								Jogar Online
+							</Button>
+						</Tooltip>
+
 
 						<Button
 							variant="contained"
