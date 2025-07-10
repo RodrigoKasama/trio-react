@@ -1,72 +1,93 @@
-import React from 'react';
-import { Box, Button, Container, Stack, Typography } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
+const API_URL = 'http://backend:8000'; // ajuste conforme necessário
 
-export default function HomePage() {
-	
+export default function SessionListPage() {
+	const [sessions, setSessions] = useState([]);
+	const [code, setCode] = useState('');
+	const [loading, setLoading] = useState(false);
+
+	useEffect(() => {
+		fetchSessions();
+	}, []);
+
+	async function fetchSessions() {
+		try {
+			const res = await axios.get(`${API_URL}/sessions/public`);
+			setSessions(res.data.sessions || []);
+		} catch (err) {
+			console.error('Erro ao buscar sessões:', err);
+		}
+	}
+
+	async function createSession() {
+		setLoading(true);
+		try {
+			const res = await axios.post(`${API_URL}/sessions/create`);
+			// redirecionar ou atualizar lista
+			alert(`Sessão criada: ${res.data.code}`);
+			fetchSessions();
+		} catch (err) {
+			alert('Erro ao criar sessão');
+		} finally {
+			setLoading(false);
+		}
+	}
+
+	async function joinPrivateSession() {
+		if (!code.trim()) return;
+		try {
+			const res = await axios.post(`${API_URL}/sessions/join`, { code });
+			alert(`Entrou na sessão: ${res.data.code}`);
+			// redirecionar para a sala?
+		} catch (err) {
+			alert('Código inválido ou erro ao entrar');
+		}
+	}
+
 	return (
-		<Box
-			sx={{
-				minHeight: '100vh',
-				display: 'flex',
-				alignItems: 'center',
-				justifyContent: 'center',
-				background: 'linear-gradient(to bottom right, #bbdefb, #d1c4e9)',
-			}}
-		>
-			<Container maxWidth="sm">
-				<Box sx={{
-					textAlign: 'center',
-					bgcolor: 'white',
-					p: 4,
-					borderRadius: 4,
-					boxShadow: 3,
-				}}
+		<div className="max-w-3xl mx-auto p-4">
+			<h1 className="text-2xl font-bold mb-4">Sessões Abertas</h1>
+			<div className="bg-white rounded shadow p-4 mb-6 space-y-2">
+				{sessions.length === 0 ? (
+					<p className="text-gray-500">Nenhuma sessão disponível.</p>
+				) : (
+					sessions.map((s, i) => (
+						<div key={i} className="border p-2 rounded flex justify-between items-center">
+							<div>🔹 <strong>{s.name || s.code}</strong></div>
+							<div className="text-sm text-gray-500">👥 {s.players}/4</div>
+						</div>
+					))
+				)}
+			</div>
+
+			<h2 className="text-xl font-semibold mb-2">Criar ou entrar em uma sessão</h2>
+			<div className="bg-white rounded shadow p-4 space-y-4">
+				<button 
+					onClick={createSession} 
+					disabled={loading}
+					className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
 				>
-					<Typography variant="h2" component="h1" gutterBottom>
-						Lobby
-					</Typography>
-					<Stack spacing={2} alignItems="center">
-						<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
-							<Typography variant="body1" gutterBottom>
-								Código:
-							</Typography>
-							<input
-								type="text"
-								style={{
-									width: '50%',
-									padding: '10px',
-									borderRadius: '4px',
-									border: '1px solid #ccc',
-									fontSize: '16px',
-								}}
-								placeholder="Código da sessão"
-							/>
-							<Button
-								variant="contained"
-								color="success"
-								size="large"
-								sx={{ width: "20%", paddingBottom: "5px", paddingTop: "5px" }}
-							>
-								Buscar
-							</Button>
-						</Box>
-						<Box>
-							<div>
-								<Typography variant="body1" gutterBottom>
-									ou
-								</Typography>
-							</div>
-						</Box>
-						<Button
-							variant="contained"
-							color="primary"
-							size="large"
-						>Criar Sessão
-						</Button>
-					</Stack>
-				</Box>
-			</Container >
-		</Box >
+					{loading ? 'Criando...' : 'Criar nova sessão'}
+				</button>
+
+				<div className="flex items-center space-x-2">
+					<input 
+						type="text" 
+						placeholder="Código da sessão" 
+						value={code} 
+						onChange={(e) => setCode(e.target.value)}
+						className="border p-2 rounded flex-1"
+					/>
+					<button 
+						onClick={joinPrivateSession}
+						className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+					>
+						Entrar
+					</button>
+				</div>
+			</div>
+		</div>
 	);
 }

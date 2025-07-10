@@ -3,6 +3,8 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from datetime import datetime, timedelta, timezone
 
+from pydantic import BaseModel
+
 from database import data
 
 SECRET_KEY = "chave-secreta-super-segura"
@@ -12,8 +14,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-
-def authenticate_user(username: str, password: str):
+def authenticate_user(username:BaseModel, password: BaseModel):
     user = data.get(username)
     if not user or user["password"] != password:
         return None

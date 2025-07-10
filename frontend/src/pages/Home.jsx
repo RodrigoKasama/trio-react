@@ -31,14 +31,21 @@ export default function HomePage() {
 
 	const open = Boolean(anchorEl);
 
-	const handleLogin = () => {
+	const handleLogin = async () => {
 		// Exemplo de login fake
 		if (username && password) {
+
 			// Chamar o serviço de autenticação pela API, se tudo certo, armazenar o token no localStorage
-			let token = login({ username, password });
-			localStorage.setItem(token_name, token);
-			setLogged(true);
-			handleClose();
+			let resp = await login(username, password);
+			
+			// Checar se a request é 200 e tem o token
+			if (resp && resp?.status === 200 && resp?.token) {
+				localStorage.setItem(token_name, resp.token);
+				setLogged(true);
+			} else {
+				// TODO: Converter isso para um snackbar
+				alert('Login falhou. Verifique suas credenciais.');
+			}
 		}
 	};
 
@@ -120,10 +127,8 @@ export default function HomePage() {
 						TRIO
 					</Typography>
 					<Stack spacing={2} alignItems="center">
-
-						<Tooltip title="Para acessar o modo online, é preciso estar logado em uma conta."
-
-						>
+						
+						<Tooltip title="Para acessar o modo online, é preciso estar logado em uma conta."						>
 							<Button
 								disabled={!logged}
 								// disabled={!isLoggedIn}

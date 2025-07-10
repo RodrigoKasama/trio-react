@@ -22,18 +22,39 @@ export async function getAvailableParties() {
 }
 
 
-export async function login(payload) { 
-	return axios.post(`${API_URL}/login`, payload, {
-		headers: {
-			'Content-Type': 'application/json',
-		},
-	});
+export async function login(user, pass) {
+	try {
+		const response = await axios.post(`${API_URL}/login`,
+			{ username: user, password: pass, },
+			{ headers: { 'Content-Type': 'application/json', }, }
+		);
+
+		return {
+			status: 200,
+			message: 'Login successful',
+			token: response.data.access_token
+		}
+		
+	} catch (error) {
+		if (error.response) {
+			return {
+				status: error.response.status,
+				message: error.response.data?.message || 'Login failed',
+				token: null
+			};
+		}
+		return {
+			status: 0,
+			message: error.message || 'Unknown error',
+			token: null
+		};
+	}
 }
 
 
 
 // Enter in a specific party (Join Party)
-export async function getParty(partyId, pass) { 
+export async function getParty(partyId, pass) {
 	return axios.get(`${API_URL}/party/${partyId}`, {
 		headers: {
 			...getAuthHeader(),
@@ -43,7 +64,7 @@ export async function getParty(partyId, pass) {
 
 }
 // Create a private party
-export async function createPrivateParty() { 
+export async function createPrivateParty() {
 	return axios.post(`${API_URL}/new_party`, null, {
 		headers: getAuthHeader(),
 	});
