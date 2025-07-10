@@ -1,7 +1,15 @@
+# Login
+# @name login
 POST http://localhost:8000/login/
 Content-Type: application/json
 
 {
-	"password": "12345", 
-	"username": "parracho@gmail.com"
+	"username": "parracho@gmail.com",
+	"password": "12345"
 }
+###
+
+@auth = {{login.response.body.access_token}}
+
+GET http://localhost:8000/parties
+Authorization: 'Bearer {{auth}}'

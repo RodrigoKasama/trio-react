@@ -1,11 +1,18 @@
 from typing import Dict, List
 from fastapi import APIRouter, Depends
 from auth import get_current_user
+from database import parties
 
 router = APIRouter()
 
 # Armazenamento em memória (substitua por banco depois)
-parties: Dict[str, List[str]] = {}
+# parties: Dict[str, List[str]] = {}
+
+@router.get("/parties")
+def get_parties(username: str = Depends(get_current_user)):
+    print(f"Usuário atual: {username}")
+    return {"parties": list(parties.keys())}
+
 
 @router.post("/create_party/{party_id}")
 def create_party(party_id: str, username: str = Depends(get_current_user)):

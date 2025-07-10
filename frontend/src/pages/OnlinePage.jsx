@@ -1,31 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Box, Typography, Card, CardContent, Button, TextField, Grid, Stack, CircularProgress} from '@mui/material';
 
-const API_URL = 'http://backend:8000'; // ajuste conforme necessário
+const API_URL = 'http://backend:8000'; // ajuste conforme sua API
 
 export default function SessionListPage() {
 	const [sessions, setSessions] = useState([]);
 	const [code, setCode] = useState('');
 	const [loading, setLoading] = useState(false);
 
-	useEffect(() => {
-		fetchSessions();
-	}, []);
+	// useEffect(() => {
+	// 	fetchSessions();
+	// }, []);
 
-	async function fetchSessions() {
+
+	
+	const fetchSessions = async () => {
 		try {
 			const res = await axios.get(`${API_URL}/sessions/public`);
 			setSessions(res.data.sessions || []);
 		} catch (err) {
 			console.error('Erro ao buscar sessões:', err);
 		}
-	}
+	};
 
-	async function createSession() {
+	const createSession = async () => {
 		setLoading(true);
 		try {
 			const res = await axios.post(`${API_URL}/sessions/create`);
-			// redirecionar ou atualizar lista
 			alert(`Sessão criada: ${res.data.code}`);
 			fetchSessions();
 		} catch (err) {
@@ -33,61 +35,83 @@ export default function SessionListPage() {
 		} finally {
 			setLoading(false);
 		}
-	}
+	};
 
-	async function joinPrivateSession() {
+	const joinPrivateSession = async () => {
 		if (!code.trim()) return;
 		try {
 			const res = await axios.post(`${API_URL}/sessions/join`, { code });
 			alert(`Entrou na sessão: ${res.data.code}`);
-			// redirecionar para a sala?
 		} catch (err) {
 			alert('Código inválido ou erro ao entrar');
 		}
-	}
+	};
 
 	return (
-		<div className="max-w-3xl mx-auto p-4">
-			<h1 className="text-2xl font-bold mb-4">Sessões Abertas</h1>
-			<div className="bg-white rounded shadow p-4 mb-6 space-y-2">
+		<Box sx={{ maxWidth: 800, mx: 'auto', p: 4 }}>
+			<Typography variant="h4" gutterBottom>
+				Sessões Abertas
+			</Typography>
+
+			<Stack spacing={2} mb={4}>
 				{sessions.length === 0 ? (
-					<p className="text-gray-500">Nenhuma sessão disponível.</p>
+					<Typography color="text.secondary">Nenhuma sessão disponível.</Typography>
 				) : (
-					sessions.map((s, i) => (
-						<div key={i} className="border p-2 rounded flex justify-between items-center">
-							<div>🔹 <strong>{s.name || s.code}</strong></div>
-							<div className="text-sm text-gray-500">👥 {s.players}/4</div>
-						</div>
+					sessions.map((s, index) => (
+						<Card key={index} variant="outlined">
+							<CardContent sx={{ display: 'flex', justifyContent: 'space-between' }}>
+								<Typography variant="body1">
+									🔹 <strong>{s.name || s.code}</strong>
+								</Typography>
+								<Typography variant="body2" color="text.secondary">
+									👥 {s.players}/4
+								</Typography>
+							</CardContent>
+						</Card>
 					))
 				)}
-			</div>
+			</Stack>
 
-			<h2 className="text-xl font-semibold mb-2">Criar ou entrar em uma sessão</h2>
-			<div className="bg-white rounded shadow p-4 space-y-4">
-				<button 
-					onClick={createSession} 
-					disabled={loading}
-					className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-				>
-					{loading ? 'Criando...' : 'Criar nova sessão'}
-				</button>
+			<Typography variant="h5" gutterBottom>
+				Criar ou Entrar em Sessão
+			</Typography>
 
-				<div className="flex items-center space-x-2">
-					<input 
-						type="text" 
-						placeholder="Código da sessão" 
-						value={code} 
-						onChange={(e) => setCode(e.target.value)}
-						className="border p-2 rounded flex-1"
-					/>
-					<button 
-						onClick={joinPrivateSession}
-						className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-					>
-						Entrar
-					</button>
-				</div>
-			</div>
-		</div>
+			<Card variant="outlined">
+				<CardContent>
+					<Stack spacing={2}>
+						<Button 
+							variant="contained" 
+							color="primary" 
+							onClick={createSession}
+							disabled={loading}
+						>
+							{loading ? <CircularProgress size={24} color="inherit" /> : 'Criar Nova Sessão'}
+						</Button>
+
+						<Grid container spacing={2} alignItems="center">
+							<Grid size={{ xs: 8} }>
+								<TextField 
+									fullWidth 
+									label="Código da Sessão" 
+									value={code} 
+									onChange={(e) => setCode(e.target.value)} 
+									variant="outlined"
+								/>
+							</Grid>
+							<Grid size={{ xs: 4} } >
+								<Button 
+									fullWidth 
+									variant="contained" 
+									color="success"
+									onClick={joinPrivateSession}
+								>
+									Entrar
+								</Button>
+							</Grid>
+						</Grid>
+					</Stack>
+				</CardContent>
+			</Card>
+		</Box>
 	);
 }
