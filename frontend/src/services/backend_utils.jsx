@@ -10,15 +10,28 @@ function getAuthHeader() {
 	return { Authorization: `Bearer ${token}` };
 }
 
-
-
 // Get avaliable parties
 export async function getAvailableParties() {
-	// Show avaliable open parties to join
-	const response = await axios.get(`${API_URL}/parties`, {
-		headers: getAuthHeader(),
-	});
-	return response.data.parties;
+	try {
+		// Show avaliable open parties to join
+		const response = await axios.get(`${API_URL}/parties`, {
+			// headers: getAuthHeader(),
+		});
+
+		if (response.status !== 200) { 
+			console.error('Failed to fetch available parties:', response.statusText);
+			return [];
+		} else {
+			return response.data.avaliable_parties;
+		}
+
+	
+		
+	} catch (error) {
+		console.error('Error fetching available parties:', error);
+		return [];
+		
+	}
 }
 
 

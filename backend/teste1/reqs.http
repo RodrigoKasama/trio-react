@@ -9,7 +9,5 @@ Content-Type: application/json
 }
 ###
 
-@auth = {{login.response.body.access_token}}
 
 GET http://localhost:8000/parties
-Authorization: 'Bearer {{auth}}'

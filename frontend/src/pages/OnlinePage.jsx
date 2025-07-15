@@ -1,28 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, Typography, Card, CardContent, Button, TextField, Grid, Stack, CircularProgress} from '@mui/material';
-
-const API_URL = 'http://backend:8000'; // ajuste conforme sua API
+import { Box, Typography, Card, CardContent, Button, TextField, Grid, Stack, CircularProgress } from '@mui/material';
+import { getAvailableParties } from '../services/backend_utils';
+// const API_URL = 'http://localhost:8000'; // ajuste conforme sua API
 
 export default function SessionListPage() {
-	const [sessions, setSessions] = useState([]);
+	const [parties, setParties] = useState([]);
+
 	const [code, setCode] = useState('');
 	const [loading, setLoading] = useState(false);
 
-	// useEffect(() => {
-	// 	fetchSessions();
-	// }, []);
-
+	useEffect(() => {
+		const fetchParties = async () => {
+			try {
+				const response = await getAvailableParties();
+				console.log(response);
+				setParties(response);
+			} catch (error) {
+				console.error('Erro ao buscar sessões:', error);
+			}
+		};
+		fetchParties();
+	}, []);
 
 	
-	const fetchSessions = async () => {
-		try {
-			const res = await axios.get(`${API_URL}/sessions/public`);
-			setSessions(res.data.sessions || []);
-		} catch (err) {
-			console.error('Erro ao buscar sessões:', err);
-		}
-	};
+
+
 
 	const createSession = async () => {
 		setLoading(true);
@@ -53,18 +56,18 @@ export default function SessionListPage() {
 				Sessões Abertas
 			</Typography>
 
-			<Stack spacing={2} mb={4}>
-				{sessions.length === 0 ? (
+			<Stack spacing={2} mb={4} width={"60%"}>
+				{parties.length === 0 ? (
 					<Typography color="text.secondary">Nenhuma sessão disponível.</Typography>
 				) : (
-					sessions.map((s, index) => (
+					Object.entries(parties).map((party, index) => (
 						<Card key={index} variant="outlined">
-							<CardContent sx={{ display: 'flex', justifyContent: 'space-between' }}>
+							<CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 								<Typography variant="body1">
-									🔹 <strong>{s.name || s.code}</strong>
+									🔹 <strong>{party[1].party_name}</strong>
 								</Typography>
 								<Typography variant="body2" color="text.secondary">
-									👥 {s.players}/4
+									👥 {party[1].players}/{party[1].max_members}
 								</Typography>
 							</CardContent>
 						</Card>
@@ -79,29 +82,20 @@ export default function SessionListPage() {
 			<Card variant="outlined">
 				<CardContent>
 					<Stack spacing={2}>
-						<Button 
-							variant="contained" 
-							color="primary" 
-							onClick={createSession}
-							disabled={loading}
-						>
-							{loading ? <CircularProgress size={24} color="inherit" /> : 'Criar Nova Sessão'}
-						</Button>
-
 						<Grid container spacing={2} alignItems="center">
-							<Grid size={{ xs: 8} }>
-								<TextField 
-									fullWidth 
-									label="Código da Sessão" 
-									value={code} 
-									onChange={(e) => setCode(e.target.value)} 
+							<Grid size={{ xs: 8 }}>
+								<TextField
+									fullWidth
+									label="Código da Sessão"
+									value={code}
+									onChange={(e) => setCode(e.target.value)}
 									variant="outlined"
 								/>
 							</Grid>
-							<Grid size={{ xs: 4} } >
-								<Button 
-									fullWidth 
-									variant="contained" 
+							<Grid size={{ xs: 4 }} >
+								<Button
+									fullWidth
+									variant="contained"
 									color="success"
 									onClick={joinPrivateSession}
 								>
@@ -109,6 +103,15 @@ export default function SessionListPage() {
 								</Button>
 							</Grid>
 						</Grid>
+
+						<Button
+							variant="contained"
+							color="primary"
+							onClick={createSession}
+							disabled={loading}
+						>
+							{loading ? <CircularProgress size={24} color="inherit" /> : 'Criar Nova Sessão'}
+						</Button>
 					</Stack>
 				</CardContent>
 			</Card>

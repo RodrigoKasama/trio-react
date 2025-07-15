@@ -128,7 +128,7 @@ export default function HomePage() {
 					</Typography>
 					<Stack spacing={2} alignItems="center">
 						
-						<Tooltip title="Para acessar o modo online, é preciso estar logado em uma conta."						>
+						<Tooltip title="Para acessar o modo online, é preciso utilizar um username único."						>
 							<Button
 								disabled={!logged}
 								// disabled={!isLoggedIn}
