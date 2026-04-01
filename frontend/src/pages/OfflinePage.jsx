@@ -45,7 +45,7 @@ export default function OfflinePage() {
 	// Conjunto de cartas selecionadas para formar um trio
 	const [selecionadas, setSelecionadas] = useState([]);
 	const [nTrio, setNTrio] = useState(0);
-	const jaPreencheu = useRef(false);
+	const jaPreencheu = useRef(true);
 
 
 	// Primeira renderização, preencher a mesa com as primeiras cartas do baralho
@@ -169,8 +169,6 @@ export default function OfflinePage() {
 
 				if (n_trios == 0) {
 					console.log("Com a substituição do trio, não há mais trios válidos na mesa. Fim do Jogo.");
-					// 	setNCartas(nCartas + 1);
-					// 	setCartasMesa(baralho.slice(0, nCartas));
 				}
 				else {
 					setCartasMesa(newMesa);

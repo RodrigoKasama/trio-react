@@ -3,15 +3,12 @@ import React, { useState } from 'react';
 import { Box, Button, Container, Stack, Typography, Avatar, Tooltip, Popover, TextField } from '@mui/material';
 
 import { useNavigate } from 'react-router-dom';
-import { getAvailableParties, login, token_name } from '../services/backend_utils';
+import { login, token_name } from '../services/backend_utils';
 
 
 
 export default function HomePage() {
 	const navigate = useNavigate();
-
-	// Fetch available parties when the component mounts
-	// console.log(getAvailableParties());
 
 	const [logged, setLogged] = useState(Boolean(localStorage.getItem(token_name)) || false);
 
