@@ -208,7 +208,7 @@ export default function OfflinePage() {
 				{cartasMesa.map((carta, index) => (
 
 
-					<Grid key={index} onClick={() => handleSelecionarCarta(index)}>
+					<Grid key={carta.filename} onClick={() => handleSelecionarCarta(index)}>
 						{/* <Carta cor={carta.cor} forma={carta.forma} num={carta.num} preenc={carta.preenc} selected={selecionadas.includes(index) ? true : false}/> */}
 						{/* <Carta cor={carta.cor} forma={carta.forma} num={carta.num} preenc={carta.preenc} selected={1}/> */}
 
