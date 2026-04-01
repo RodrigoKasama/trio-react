@@ -1,4 +1,8 @@
 {
 	"python.analysis.typeCheckingMode": "basic",
-	"python.analysis.autoImportCompletions": true
+	"python.analysis.autoImportCompletions": true,
+	"sonarlint.connectedMode.project": {
+		"connectionId": "trio_conn",
+		"projectKey": "RodrigoKasama_trio-react"
+	}
 }
