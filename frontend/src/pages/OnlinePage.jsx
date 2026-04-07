@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Box, Typography, Card, CardContent, Button, TextField, Grid, Stack, CircularProgress } from '@mui/material';
 import { getAvailableParties } from '../services/backend_utils';
-// const API_URL = 'http://localhost:8000'; // ajuste conforme sua API
+const API_URL = 'http://localhost:8000';
 
 export default function SessionListPage() {
 	const [parties, setParties] = useState([]);
@@ -10,30 +10,27 @@ export default function SessionListPage() {
 	const [code, setCode] = useState('');
 	const [loading, setLoading] = useState(false);
 
-	useEffect(() => {
-		const fetchParties = async () => {
-			try {
-				const response = await getAvailableParties();
-				console.log(response);
-				setParties(response);
-			} catch (error) {
-				console.error('Erro ao buscar sessões:', error);
-			}
-		};
-		fetchParties();
+	const fetchParties = useCallback(async () => {
+		try {
+			const response = await getAvailableParties();
+			setParties(response);
+		} catch (error) {
+			console.error('Erro ao buscar sessões:', error);
+		}
 	}, []);
 
-	
-
-
+	useEffect(() => {
+		fetchParties();
+	}, [fetchParties]);
 
 	const createSession = async () => {
 		setLoading(true);
 		try {
 			const res = await axios.post(`${API_URL}/sessions/create`);
 			alert(`Sessão criada: ${res.data.code}`);
-			fetchSessions();
+			await fetchParties();
 		} catch (err) {
+			console.error('Erro ao criar sessão:', err);
 			alert('Erro ao criar sessão');
 		} finally {
 			setLoading(false);
@@ -46,6 +43,7 @@ export default function SessionListPage() {
 			const res = await axios.post(`${API_URL}/sessions/join`, { code });
 			alert(`Entrou na sessão: ${res.data.code}`);
 		} catch (err) {
+			console.error('Erro ao entrar na sessão:', err);
 			alert('Código inválido ou erro ao entrar');
 		}
 	};
@@ -60,8 +58,8 @@ export default function SessionListPage() {
 				{parties.length === 0 ? (
 					<Typography color="text.secondary">Nenhuma sessão disponível.</Typography>
 				) : (
-					Object.entries(parties).map((party, index) => (
-						<Card key={index} variant="outlined">
+					Object.entries(parties).map((party) => (
+						<Card key={party[0]} variant="outlined">
 							<CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 								<Typography variant="body1">
 									🔹 <strong>{party[1].party_name}</strong>

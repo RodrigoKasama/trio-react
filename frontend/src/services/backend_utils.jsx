@@ -18,15 +18,11 @@ export async function getAvailableParties() {
 			// headers: getAuthHeader(),
 		});
 
-		if (response.status !== 200) { 
-			console.error('Failed to fetch available parties:', response.statusText);
-			return [];
-		} else {
+		if (response.status === 200) {
 			return response.data.avaliable_parties;
 		}
-
-	
-		
+		console.error('Failed to fetch available parties:', response.statusText);
+		return [];
 	} catch (error) {
 		console.error('Error fetching available parties:', error);
 		return [];

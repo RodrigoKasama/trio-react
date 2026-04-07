@@ -11,7 +11,10 @@ router = APIRouter()
 # parties: Dict[str, List[str]] = {}
 
 
-@router.post("/create_party/{party_id}")
+@router.post(
+    "/create_party/{party_id}",
+    responses={400: {"description": "Party already exists"}},
+)
 def create_party(
     party_id: str, username: Annotated[str, Depends(get_current_user)]
 ):
@@ -20,7 +23,10 @@ def create_party(
     parties[party_id] = [username]
     return {"msg": f"Party {party_id} criada por {username}"}
 
-@router.post("/join_party/{party_id}")
+@router.post(
+    "/join_party/{party_id}",
+    responses={404: {"description": "Party not found"}},
+)
 def join_party(
     party_id: str, username: Annotated[str, Depends(get_current_user)]
 ):
@@ -30,7 +36,10 @@ def join_party(
         parties[party_id].append(username)
     return {"msg": f"{username} entrou na party {party_id}"}
 
-@router.get("/party_members/{party_id}")
+@router.get(
+    "/party_members/{party_id}",
+    responses={404: {"description": "Party not found"}},
+)
 def party_members(
     party_id: str, username: Annotated[str, Depends(get_current_user)]
 ):

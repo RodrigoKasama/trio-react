@@ -14,6 +14,17 @@ const corMap = { "Red": '0', "Green": '1', "Purple": '2' };
 const numMap = { 1: '0', 2: '1', 3: '2' };
 const preencMap = { "Full": '0', "Striped": '1', "Empty": '2' };
 
+function checkTrio(cartas) {
+	for (const att of Object.keys(cartas[0])) {
+		if (att === 'filename') continue;
+		const aux = new Set(cartas.map((carta) => carta[att]));
+		if (aux.size !== 1 && aux.size !== 3) {
+			return false;
+		}
+	}
+	return true;
+}
+
 function gerarBaralho() {
 	const baralho = [];
 	for (const forma of Object.keys(formaMap)) {
@@ -37,8 +48,7 @@ function gerarBaralho() {
 
 export default function OfflinePage() {
 
-	const [nCartas, setNCartas] = useState(12);
-	// const [baralho, setBaralho] = useState(gerarBaralho().sort(() => Math.random() - 0.5));
+	const nCartas = 12;
 	const [baralho, setBaralho] = useState(gerarBaralho());
 	// Conjunto de cartas da mesa, baseia-se em nCartas do baralho
 	const [cartasMesa, setCartasMesa] = useState([]);
@@ -113,8 +123,7 @@ export default function OfflinePage() {
 			for (let j = i + 1; j < mesa.length; j++) {
 				for (let k = j + 1; k < mesa.length; k++) {
 					let trio = [mesa[i], mesa[j], mesa[k]];
-					if (check_trio(trio)) {
-						// console.log("Trio válido encontrado: ", trio);
+					if (checkTrio(trio)) {
 						n_trios_validos++;
 					}
 				}
@@ -122,18 +131,6 @@ export default function OfflinePage() {
 		}
 		return n_trios_validos;
 	}
-
-	function check_trio(cartas) {
-		for (let att of Object.keys(cartas[0])) {
-			if (att === 'filename') continue;
-			let aux = new Set(cartas.map(carta => carta[att]));
-			if (aux.size !== 1 && aux.size !== 3) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 
 	function handleSelecionarCarta(index) {
 
@@ -143,7 +140,7 @@ export default function OfflinePage() {
 		if (jaSelecionada) {
 			novaSelecao = selecionadas.filter(i => i !== index);
 		} else {
-			novaSelecao = selecionadas.length != 3 ? [...selecionadas, index] : [...selecionadas];
+			novaSelecao = selecionadas.length < 3 ? [...selecionadas, index] : [...selecionadas];
 		}
 		novaSelecao = novaSelecao.sort();
 
@@ -151,7 +148,7 @@ export default function OfflinePage() {
 
 		if (novaSelecao.length === 3) {
 			const cartasSelecionadas = novaSelecao.map(i => cartasMesa[i]);
-			let is_trio = check_trio(cartasSelecionadas);
+			let is_trio = checkTrio(cartasSelecionadas);
 
 			if (is_trio) {
 
@@ -167,7 +164,7 @@ export default function OfflinePage() {
 
 				let n_trios = check_mesa(newMesa);
 
-				if (n_trios == 0) {
+				if (n_trios === 0) {
 					console.log("Com a substituição do trio, não há mais trios válidos na mesa. Fim do Jogo.");
 				}
 				else {
@@ -207,9 +204,6 @@ export default function OfflinePage() {
 
 
 					<Grid key={carta.filename} onClick={() => handleSelecionarCarta(index)}>
-						{/* <Carta cor={carta.cor} forma={carta.forma} num={carta.num} preenc={carta.preenc} selected={selecionadas.includes(index) ? true : false}/> */}
-						{/* <Carta cor={carta.cor} forma={carta.forma} num={carta.num} preenc={carta.preenc} selected={1}/> */}
-
 						<Box sx={{
 							width: '210px',
 							height: '320px',
@@ -218,7 +212,6 @@ export default function OfflinePage() {
 							display: 'flex',
 							justifyContent: 'center',
 							alignItems: 'center',
-							// aspectRatio: '3/4',
 						}}>
 							<img src={carta.filename + `.svg`} alt={`${carta.num} ${carta.forma} ${carta.preenc} ${carta.cor}`} />
 						</Box>

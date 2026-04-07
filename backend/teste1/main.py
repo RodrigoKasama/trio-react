@@ -8,7 +8,7 @@ from jose import JWTError, jwt
 from fastapi.security import OAuth2PasswordBearer
 
 from fastapi.middleware.cors import CORSMiddleware
-from Models import Login_Payload
+from Models import LoginPayload
 
 from database import parties
 
@@ -62,7 +62,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 
 @app.post("/login")
-async def login(user_payload: Login_Payload):
+async def login(user_payload: LoginPayload):
 
     user = authenticate_user(user_payload.username, user_payload.password)
     if not user:

@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class Login_Payload(BaseModel):
+class LoginPayload(BaseModel):
     username: str
     password: str
 

@@ -24,11 +24,9 @@ def gen_svg(cor, shape, num, preenc):
 	# Defs
 	output += '<defs>\n'
 	
-	if preenc == "full":
-		pass
-	elif preenc == "stripe":
+	if preenc == "stripe":
 		output += template_pattern.replace("@", cor) + "\n"
-	else:
+	elif preenc == "empty":
 		output += template_pattern.replace("@", 'white') + "\n"
 		
 	# Style
@@ -45,9 +43,6 @@ def gen_svg(cor, shape, num, preenc):
 		
 		
 	output += '</defs>\n'
-	
-	# Background
-	# output += '<rect x="5" y="5" height="350" width="225" rx="10" ry="10" fill="white" stroke="grey" stroke-width="2" />'
 	
 	# Desenho
 	prefix = '' if preenc == "full" else 'fill="url(#verticalStripes)"'

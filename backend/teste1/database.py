@@ -7,33 +7,34 @@ users = {
 }
 
 
-parties = {
-
-    str(uuid.uuid4()).split('-')[0]: {
+party_templates = [
+    {
         "host": "joao",
         "party_name": "Festa do João",
         "max_members": 10,
-        "conn_players":3,
+        "conn_players": 3,
         "guests": [],
         "private": False,
         "passwd": None,
     },
-    str(uuid.uuid4()).split('-')[0]: {
+    {
         "host": "ana",
         "party_name": "Festa da Ana VIP",
         "max_members": 5,
-        "conn_players":3,
+        "conn_players": 3,
         "guests": [],
         "private": True,
-        "passwd": "abacate"
+        "passwd": "abacate",
     },
-    str(uuid.uuid4()).split('-')[0]: {
+    {
         "host": "ana",
         "party_name": "Festa da Ana",
         "max_members": 5,
-        "conn_players":3,
+        "conn_players": 3,
         "guests": [],
         "private": False,
-        "passwd": "abacate"
-    }
-}
+        "passwd": "abacate",
+    },
+]
+
+parties = {str(uuid.uuid4()).split('-')[0]: party for party in party_templates}

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-// import { Box, Button, Container, Stack, Typography } from '@mui/material';
 import { Box, Button, Container, Stack, Typography, Avatar, Tooltip, Popover, TextField } from '@mui/material';
 
 import { useNavigate } from 'react-router-dom';
@@ -29,7 +28,6 @@ export default function HomePage() {
 	const open = Boolean(anchorEl);
 
 	const handleLogin = async () => {
-		// Exemplo de login fake
 		if (username && password) {
 
 			// Chamar o serviço de autenticação pela API, se tudo certo, armazenar o token no localStorage
@@ -40,7 +38,6 @@ export default function HomePage() {
 				localStorage.setItem(token_name, resp.token);
 				setLogged(true);
 			} else {
-				// TODO: Converter isso para um snackbar
 				alert('Login falhou. Verifique suas credenciais.');
 			}
 		}
@@ -128,13 +125,6 @@ export default function HomePage() {
 						<Tooltip title="Para acessar o modo online, é preciso utilizar um username único."						>
 							<Button
 								disabled={!logged}
-								// disabled={!isLoggedIn}
-								// onMouseEnter={() => {
-								// 	if (isLoggedIn) {
-								// 		alert('Para acessar o modo online, é preciso estar logado em uma conta.');
-								// 	}
-								// }}
-
 								variant="contained"
 								color="primary"
 								size="large"
